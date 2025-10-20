@@ -42,17 +42,14 @@ func TestAddGetDelete(t *testing.T) {
 	// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
 	num, err := store.Add(parcel)
 	require.NoError(t, err)
-	require.NotEmpty(t, num)
+	assert.NotEmpty(t, num)
 
 	// get
 	// получите только что добавленную посылку, убедитесь в отсутствии ошибки
 	// проверьте, что значения всех полей в полученном объекте совпадают со значениями полей в переменной parcel
 	testParcels, err := store.Get(num)
 	require.NoError(t, err)
-	require.Equal(t, parcel.Client, testParcels.Client)
-	require.Equal(t, parcel.Status, testParcels.Status)
-	require.Equal(t, parcel.Address, testParcels.Address)
-	require.Equal(t, parcel.CreatedAt, testParcels.CreatedAt)
+	assert.Equal(t, parcel, testParcels)
 
 	// delete
 	// удалите добавленную посылку, убедитесь в отсутствии ошибки
@@ -61,7 +58,7 @@ func TestAddGetDelete(t *testing.T) {
 	require.NoError(t, err)
 	_, err = store.Get(num)
 	require.Error(t, err)
-	assert.Equal(t, sql.ErrNoRows, err)
+	assert.ErrorIs(t, err, sql.ErrNoRows)
 }
 
 // TestSetAddress проверяет обновление адреса
@@ -89,7 +86,7 @@ func TestSetAddress(t *testing.T) {
 	// получите добавленную посылку и убедитесь, что адрес обновился
 	testParcels, err := store.Get(num)
 	require.NoError(t, err)
-	require.Equal(t, newAddress, testParcels.Address)
+	assert.Equal(t, newAddress, testParcels.Address)
 }
 
 // TestSetStatus проверяет обновление статуса
@@ -116,7 +113,7 @@ func TestSetStatus(t *testing.T) {
 	// получите добавленную посылку и убедитесь, что статус обновился
 	testParcels, err := store.Get(num)
 	require.NoError(t, err)
-	require.Equal(t, ParcelStatusSent, testParcels.Status)
+	assert.Equal(t, ParcelStatusSent, testParcels.Status)
 }
 
 // TestGetByClient проверяет получение посылок по идентификатору клиента
